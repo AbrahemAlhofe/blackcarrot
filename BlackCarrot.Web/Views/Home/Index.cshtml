@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<main id="app">
+
+    <ul>
+        <li v-for="product in products">
+            <div>{{ product.productName }}</div>
+            <div>{{ product.productPrice }}</div>
+        </li>
+    </ul>
+
+</main>
+
+<script src="https://unpkg.com/vue@3.2.45/dist/vue.global.js"></script>
+<script>
+
+const App = Vue.createApp({
+
+    data: vm => ({
+        products: []
+    }),
+
+    async mounted() {
+        const rawResponse = await fetch('http://blackcarrot.com/search', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+            },
+        });
+        const content = await rawResponse.json();
+        this.products = content;
+    }
+
+});
+
+
+App.mount("#app");
+
+</script>

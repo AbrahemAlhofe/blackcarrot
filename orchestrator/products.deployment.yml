@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products-deployment
+  labels:
+    app: blackcarrot
+    tier: services
+    service: products
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blackcarrot
+      tier: services
+      service: products
+  template:
+    metadata:
+      labels:
+        app: blackcarrot
+        tier: services
+        service: products
+    spec:
+      containers:
+        - name: products-container
+          image: products-image:latest
+          ports:
+            - containerPort: 80
+          imagePullPolicy: Never
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: products-service
+  labels:
+    app: blackcarrot
+    tier: services
+    service: products
+spec:
+  selector:
+    app: blackcarrot
+    tier: services
+    service: products
+  ports:
+    - port: 80
+      targetPort: 80
+  type: NodePort

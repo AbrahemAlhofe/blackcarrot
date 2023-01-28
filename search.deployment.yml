@@ -1,0 +1,21 @@
+apiVersion: apis/v1
+kind: Deployment
+metadata:
+  name: search-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blackcarrot
+  template:
+    metadata:
+      labels:
+        app: blackcarrot
+        service: search
+    spec:
+      containers:
+        - name: search-container
+          image: search-image:latest
+          ports:
+            - containerPort: 80
+          imagePullPolicy: Never

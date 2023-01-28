@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service
+  labels:
+    app: blackcarrot
+    tier: database
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: blackcarrot
+    tier: database
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-deployment
+  labels:
+    app: blackcarrot
+    tier: database
+spec:
+  selector:
+    matchLabels:
+      app: blackcarrot
+      tier: database
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: blackcarrot
+        tier: database
+    spec:
+      containers:
+      - image: mysql:8.0-debian
+        name: db-container
+        env:
+        - name: MYSQL_DATABASE
+          value: blackcarrot
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        ports:
+        - containerPort: 3306
+          name: db-container
+        volumeMounts:
+        - name: db-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: db-persistent-storage
+        persistentVolumeClaim:
+          claimName: db-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-claim
+  labels:
+    app: blackcarrot
+    tier: database
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi

@@ -1,0 +1,49 @@
+﻿@model BlackCarrot.Data.Models.ProductModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<main id="app">
+
+    <form ref="form" v-on:submit.prevent="submit">
+        @Html.LabelFor(Model => Model.ProductName);
+        @Html.TextBoxFor(Model => Model.ProductName);
+        @Html.LabelFor(Model => Model.ProductPrice);
+        @Html.TextBoxFor(Model => Model.ProductPrice);
+        <pre>{{ result }}</pre>
+        <input type="submit"/>
+    </form>
+
+</main>
+
+<script src="https://unpkg.com/vue@3.2.45/dist/vue.global.js"></script>
+<script>
+
+const App = Vue.createApp({
+
+    data: vm => ({ result: '' }),
+
+    methods: {
+        async submit() {
+            const data = {}
+            for (const pair of new FormData(this.$refs.form)) {
+                data[pair[0]] = pair[1];
+            }
+            const request = await fetch('http://blackcarrot.com/products', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            });
+            this.result = await request.json();
+        }
+    }
+
+});
+
+
+App.mount("#app");
+
+</script>
